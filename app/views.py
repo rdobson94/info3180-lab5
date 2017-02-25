@@ -29,10 +29,15 @@ def about():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
-    if request.method == "POST":
+    if request.method == "POST" and form.validate_on_submit():
         # change this to actually validate the entire form submission
         # and not just one field
-        if form.username.data:
+        username = form.username.data
+        password = form.password.data
+        
+        user = UserProfile.query.filter_by(username=username, password=password).first()
+        
+        if user is not None:
             # Get the username and password values from the form.
 
             # using your model, query database for a user based on the username
@@ -44,14 +49,18 @@ def login():
             login_user(user)
 
             # remember to flash a message to the user
-            return redirect(url_for("home")) # they should be redirected to a secure-page route instead
+            flash('Login Successful','success')
+            return redirect(url_for('home')) # they should be redirected to a secure-page route instead
+        else:
+            flash('Username or Password is incorrect','danger')
+      
     return render_template("login.html", form=form)
-
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session
 @login_manager.user_loader
 def load_user(id):
     return UserProfile.query.get(int(id))
+
 
 ###
 # The functions below should be applicable to all Flask apps.
