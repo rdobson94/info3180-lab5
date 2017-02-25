@@ -55,6 +55,15 @@ def login():
             flash('Username or Password is incorrect','danger')
       
     return render_template("login.html", form=form)
+    
+    
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('Successfully Logged Out','success')
+    return render_template("home.html")
+    
+    
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session
 @login_manager.user_loader
